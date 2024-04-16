@@ -165,14 +165,6 @@ public:
                     if (hint.size() > 0) {
                         // externel test
                         auto gpu_idx = std::stoi(hint);
-                        // gpu_idx 的值是否为2  
-                        if (gpu_idx == 2) {
-                            send_load_req(func, gpu_idx, 1);
-                            std::cout << "gpu index 1---->2 " << std::endl;
-                        }              
-                        else{
-                            send_load_req(func, gpu_idx);
-                        }
                         // test p2p
                         // send_load_req(func, gpu_idx, gpu_idx == 0 && model_repo_.model_active_device_map_[func].find(src_gpu_for_test) != model_repo_.model_active_device_map_[func].end()? src_gpu_for_test : -1);
                         send_load_req(func, gpu_idx);
