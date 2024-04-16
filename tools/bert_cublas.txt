@@ -1,0 +1,6 @@
+cublasStatus_t cublasCreate_v2
+cublasStatus_t cublasSetStream_v2
+cublasStatus_t cublasSetMathMode
+cublasStatus_t cublasSgemm_v2
+cublasStatus_t cublasSgemmStridedBatched
+cublasStatus_t cublasGetMathMode

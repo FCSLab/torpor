@@ -1,0 +1,4 @@
+*.npy 
+!samples.npy
+*.DS_Store
+.ipynb_checkpoints

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package signal;
+
+enum RequestType {
+    ExecuteAfterLoad = 0;
+    Execute = 1;
+    Load = 2;
+    Unload = 3;
+
+    // test
+    ExecuteForRecord = 10;
+    Replay = 11;
+}
+
+message SignalRequest {
+    RequestType type = 1;
+    string function = 2;
+    string payload = 3;
+}
+
+enum AckType {
+    OK = 0;
+    Inavail = 1;
+}
+
+message SignalAck {
+    AckType ack = 1; 
+    int32 resp = 2;
+}
