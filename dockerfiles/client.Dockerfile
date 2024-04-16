@@ -1,6 +1,8 @@
 FROM standalone-base:latest
 
-RUN pip3 install pytorch_pretrained_bert transformers
+RUN pip3 install torch==1.11.0a0+bfe5ad2
+RUN pip3 install transformers==4.27.1
+RUN pip3 install pytorch-pretrained-bert==0.6.2
 
 RUN rm -rf $PROJ_HOME
 COPY . $PROJ_HOME
@@ -19,8 +21,8 @@ RUN rm -rf /client_bin && \
     cd /client_bin && \
     ldd librtclient.so | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp -v '{}' . && \
     cp ${PROJ_HOME}/build/src/client/libmycuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1 && \
-    # echo "LD_LIBRARY_PATH=/client_bin/:\$LD_LIBRARY_PATH LD_PRELOAD=/client_bin/librtclient.so python \$1" > start.sh && \
-    # echo "LD_LIBRARY_PATH=/client_bin/:\$LD_LIBRARY_PATH LD_PRELOAD=/client_bin/librtclient.so CLIENT_ID=\$1 python \$2 \$3" > start_with_id.sh && \
+    echo "LD_LIBRARY_PATH=/client_bin/:\$LD_LIBRARY_PATH LD_PRELOAD=/client_bin/librtclient.so python \$1" > start.sh && \
+    echo "LD_LIBRARY_PATH=/client_bin/:\$LD_LIBRARY_PATH LD_PRELOAD=/client_bin/librtclient.so CLIENT_ID=\$1 python \$2 \$3" > start_with_id.sh && \
     echo "LD_LIBRARY_PATH=/client_bin/:\$LD_LIBRARY_PATH LD_PRELOAD=/client_bin/librtclient.so CLIENT_ID=\$1 CUR_SERVER_ID=\$2 python \$3 \$4" > start_with_server_id.sh && \
     chmod +x start.sh && \
     chmod +x start_with_id.sh && \
