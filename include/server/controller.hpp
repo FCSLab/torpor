@@ -10,8 +10,8 @@
 #include "cuda_server.hpp"
 #include "model_repo.hpp"
 #include "evictor.hpp"
-#include "peer_interface.hpp"
-#include "peer_tcp.hpp"
+// #include "peer_interface.hpp"
+
 
 namespace server {
 
@@ -51,10 +51,9 @@ const string default_eviction_policy = "IA"; // interference-aware (IA) or LRU
 
 class Controller {
 public:
-    Controller(logger log, zmq::context_t *context,unsigned int signal_port = 0): 
+    Controller(logger log, zmq::context_t *context): 
             log_(log),
-            socket_(zmq::socket_t(*context, ZMQ_DEALER)),
-            sig_socket_(zmq::socket_t(*context, ZMQ_ROUTER)) {
+            sig_socket_(zmq::socket_t(*context, ZMQ_REP)) {
         cudaCheck(cudaGetDeviceCount(&gpu_count_));
 
         // init cudnn handle
@@ -74,25 +73,11 @@ public:
                 }
             }
         }
-        
-        if(signal_port != 0){
-            string addr = bind_signal_addr(signal_port);
-            sig_socket_.bind(bind_signal_addr(signal_port));
 
-            address_to_socket_map_.insert(make_pair(addr,&sig_socket_));
-        }else{
-            string addr = bind_signal_addr();
-            sig_socket_.bind(bind_signal_addr());
-            socket_.connect("tcp://localhost:90");
-
-            address_to_socket_map_.insert(make_pair(addr,&sig_socket_));
-        }
-
-        //sig_socket_.bind(bind_signal_addr());
+        sig_socket_.bind(get_signal_addr(0));
 
         pollitems_ = {
             {static_cast<void*>(sig_socket_), 0, ZMQ_POLLIN, 0} ,
-            {static_cast<void*>(socket_), 0, ZMQ_POLLIN, 0} ,
         };
         
         auto gpu_mem_limit_str = get_env_var("MEM_LIMIT_IN_GB");
@@ -142,11 +127,10 @@ public:
 
         while (true) {
             kZmqUtil->poll(0, &pollitems_);
+
             // signal from router
             if (pollitems_[0].revents & ZMQ_POLLIN) {
-                zmq::message_t address; 
-                auto req_serialized = kZmqUtil->recv_string_with_peer(address,&sig_socket_);
-                //auto req_serialized = kZmqUtil->recv_string(&sig_socket_);
+                auto req_serialized = kZmqUtil->recv_string(&sig_socket_);
                 SignalRequest req;
                 req.ParseFromString(req_serialized);
                 auto func = req.function();
@@ -173,7 +157,7 @@ public:
                     }
                     else {
                         send_exec_req(func, gpu_idx, ExecutorStatus_RunColdStart);
-                        send_signal_ack(address,AckType::OK, gpu_idx);
+                        send_signal_ack(AckType::OK, gpu_idx);
                     }
                 }
                 else if (req.type() == RequestType::Execute) {
@@ -181,11 +165,19 @@ public:
                     if (hint.size() > 0) {
                         // externel test
                         auto gpu_idx = std::stoi(hint);
+                        // gpu_idx 的值是否为2  
+                        if (gpu_idx == 2) {
+                            send_load_req(func, gpu_idx, 1);
+                            std::cout << "gpu index 1---->2 " << std::endl;
+                        }              
+                        else{
+                            send_load_req(func, gpu_idx);
+                        }
                         // test p2p
                         // send_load_req(func, gpu_idx, gpu_idx == 0 && model_repo_.model_active_device_map_[func].find(src_gpu_for_test) != model_repo_.model_active_device_map_[func].end()? src_gpu_for_test : -1);
                         send_load_req(func, gpu_idx);
                         send_exec_req(func, gpu_idx, model_level_to_exec_status(model_level_map_[func]));
-                        send_signal_ack(address,AckType::OK, gpu_idx);
+                        send_signal_ack(AckType::OK, gpu_idx);
                     }
                     else {
                         auto decision = schedule_func_(func);
@@ -196,27 +188,8 @@ public:
                             std::cout << "Controller -- Send func " << func << " exec req to " << decision.gpu_idx_ << " src gpu " << decision.src_swap_gpu_ << " status " << decision.status_ << std::endl;
                             send_load_req(func, decision.gpu_idx_, decision.src_swap_gpu_);
                             send_exec_req(func, decision.gpu_idx_, decision.status_);
-                            send_signal_ack(address,AckType::OK, decision.gpu_idx_);
+                            send_signal_ack(AckType::OK, decision.gpu_idx_);
                         }
-                    }
-                }
-                else if (req.type() == RequestType::ExecuteAfterP2PLoad) {
-                    auto peer_address = req.payload();
-
-                    auto decision = schedule_func_(func);
-                    if (decision.gpu_idx_ == -1) {
-                        std::cout << "" << std::endl;
-                        req_queue_.push({func, false});
-                    }
-                    else {
-                        std::cout << "Controller -- Send func " << func << " exec req to " << decision.gpu_idx_ << " src gpu " << decision.src_swap_gpu_ << " status " << decision.status_ << std::endl;
-                        if(model_repo_.model_meta_data_info_map_.find(func)==model_repo_.model_meta_data_info_map_.end()){
-                            zmq::socket_t* socket = h2h_tcp_.fetch_model(&socket_,peer_address,func,model_repo_);
-                            //listen_to_socket(peer_address,socket);
-                        }
-                        send_load_req(func, decision.gpu_idx_, manager::REMOTE_ID);
-                        send_exec_req(func, decision.gpu_idx_, decision.status_);
-                        send_signal_ack(address,AckType::OK, decision.gpu_idx_);
                     }
                 }
                 else if (req.type() == RequestType::Unload) {
@@ -238,7 +211,7 @@ public:
                             send_to_executor(func, gpu_id, ExecutorSignal_Unload);
                         }
                     }
-                    send_signal_ack(address,AckType::OK);
+                    send_signal_ack(AckType::OK);
                 }
                 else if (req.type() == RequestType::Load) {
                     // test
@@ -246,115 +219,10 @@ public:
                         send_load_req(func, i);
                         model_repo_.add_model_info(func, i);
                     }
-                    send_signal_ack(address,AckType::OK);
-                }else if(req.type() == RequestType::SendModel){
-                    auto peer_address = req.payload();
-                    if (peer_address.size() > 0) {
-                        if(model_repo_.model_access_order_map_.find(func)!= model_repo_.model_access_order_map_.end()){
-                            vector<void*> v_ptrs;
-                            vector<int> param_size;
-                            int param_count = 0;
-                            for(auto ptr : model_repo_.model_access_order_map_[func]){
-                                v_ptrs.push_back(ptr);
-                                param_size.push_back(model_repo_.model_host_info_map_[func].model_param_info_[ptr].size_);
-                                param_count++;
-                            }
-                            h2h_tcp_.send_model_meta_data(peer_address,
-                                func,
-                                v_ptrs,
-                                param_size,
-                                param_count
-                                );
-                            h2h_tcp_.send_model(peer_address,func,model_repo_);
-                        }
-                    }
-                }
-                else if (req.type() == RequestType::H2HfetchModel){
-                    // test 
-                    // vector<void*> v_ptrs;
-                    // vector<int> param_size;
-                    // int param_count = 1;
-
-                    // h2h_tcp_.send_model_meta_data_resp(address,
-                    //         &sig_socket_,
-                    //         func,
-                    //         v_ptrs,
-                    //         param_size,
-                    //         param_count
-                    //         );
-                    
-                    // model_repo_.model_access_order_map_[func].push_back((void*)1);
-                    // h2h_tcp_.send_model_resp(address,&sig_socket_,func,model_repo_);
-
-
-                    if(model_repo_.model_access_order_map_.find(func)!= model_repo_.model_access_order_map_.end()){
-                        vector<void*> v_ptrs;
-                        vector<int> param_size;
-                        int param_count = 0;
-                        for(auto ptr : model_repo_.model_access_order_map_[func]){
-                            v_ptrs.push_back(ptr);
-                            param_size.push_back(model_repo_.model_host_info_map_[func].model_param_info_[ptr].size_);
-                            param_count++;
-                        }
-                        h2h_tcp_.send_model_meta_data_resp(address,
-                            &sig_socket_,
-                            func,
-                            v_ptrs,
-                            param_size,
-                            param_count
-                            );
-                        h2h_tcp_.send_model_resp(address,&sig_socket_,func,model_repo_);
-                    }                    
+                    send_signal_ack(AckType::OK);
                 }
             }
-            for(size_t i = 1; i < pollitems_.size(); ++i) {
-                if (pollitems_[1].revents & ZMQ_POLLIN) {
-                    std::cout<< "arrie here" <<std::endl;
-                    //auto socket = reinterpret_cast<zmq::socket_t*>(pollitems_[1].socket);
-                    std::cout<< "arrve here" <<std::endl;
-                    auto req_serialized = kZmqUtil->recv_string(&socket_);
-                    SignalRequest req;
-                    req.ParseFromString(req_serialized);
-                    auto func = req.function();
 
-                    std::cout << "Controller -- Receive signal " << req.type() << " for func " << func << std::endl;
-                    log_->info("Receive signal {} func {}", req.type(), func);
-                    
-                    if (req.type() == RequestType::H2HSendModelMetaData){
-                        auto meta_data = req.meta_data();
-                        int param_count = meta_data.param_count();
-                        vector<void*> v_ptrs;
-
-                        std::cout << "Controller -- ReceiveModelMetaData " << func << " param_count " << param_count << std::endl;
-                        
-                        // update model_access_order_map_
-                        for(int i=0;i<param_count;i++){
-                            void* v_ptr = (void*)meta_data.virtual_ptr(i);
-                            v_ptrs.push_back(v_ptr);
-                            model_repo_.check_add_model_access_order(func,v_ptr);
-                        }
-                        // init model_param_readiness
-                        init_model_readiness_to_remote(func,v_ptrs);
-                        model_repo_.model_meta_data_info_map_[func] = true;
-                    }else if (req.type() == RequestType::H2HSendModelData){
-                        auto param_data = req.param_data();
-
-                        auto param = param_data.param();
-                        auto index = param_data.index();
-                        auto size = param_data.size();
-
-                        std::cout << "Controller -- ReceiveModelParamData " << func << " index " << index << std::endl;
-
-                        void* v_ptr = model_repo_.model_access_order_map_[func][index];
-                        // update model_host_info_map_
-                        model_repo_.load_model_param_to_host(func,v_ptr,param,size);
-
-                        // update model_param_readiness
-                        update_model_param_readiness_to_host(func,v_ptr);
-                        sync_with_net();
-                    }
-                }
-            }
             // handle signal from executors
             if (!controller_sync_queue->empty()) {
                 auto executor_id = controller_sync_queue->front();
@@ -401,6 +269,8 @@ public:
                     send_signal_ack(AckType::OK, executor_id);
                 }
             }
+            
+
         }
     }
 
@@ -560,7 +430,7 @@ private:
             lock_src_func(func, dst_gpu, src_gpu);
         }
         check_eviction(dst_gpu, func);
-        int signal = ExecutorSignal_Load + 2 + src_gpu;
+        int signal = ExecutorSignal_Load + 1 + src_gpu;
         send_to_executor(func, dst_gpu, signal);
     }
 
@@ -578,17 +448,6 @@ private:
         kZmqUtil->send_string(ack_serialized, &sig_socket_);
     }
 
-    inline void send_signal_ack(zmq::message_t &address,AckType type, int gpu_id = -1) {
-        SignalAck ack;
-        ack.set_ack(type);
-        ack.set_resp(gpu_id);
-        
-        string ack_serialized;
-        ack.SerializeToString(&ack_serialized);
-        //kZmqUtil->send_string(ack_serialized, &sig_socket_);
-        kZmqUtil->send_string_with_peer(address,ack_serialized, &sig_socket_);
-    }
-
     inline void lock_src_func(string &func, int dst_gpu, int src_gpu) {
         executor_gpu_demand_.insert({dst_gpu, {src_gpu, func}});
         evictor_->lock(src_gpu, func);
@@ -601,36 +460,10 @@ private:
         }
     }
 
-    inline void init_model_readiness_to_remote(string& function,vector<void*>& v_ptrs){
-        for(auto& executor : executor_vec_){
-            executor->init_model_readiness(function,v_ptrs,manager::ParamReadiness_Remote);
-        }
-    }
 
-    inline void update_model_param_readiness_to_host(string& function,void* v_ptr){
-        for(auto& executor : executor_vec_){
-            executor->update_model_param_readiness(function,v_ptr,manager::ParamReadiness_Host);
-        }
-    }
-
-    inline void listen_to_socket(string& addr,zmq::socket_t* socket){
-        if(address_to_socket_map_.find(addr) == address_to_socket_map_.end()){
-            address_to_socket_map_.insert(make_pair(addr,socket));
-            pollitems_.push_back({static_cast<void*>(socket), 0, ZMQ_POLLIN, 0});
-        }
-    }
-
-    inline void sync_with_net(){
-        for(auto& executor : executor_vec_){
-            executor->sync_with_net();
-        }
-    }
 private:
     zmq::socket_t sig_socket_;
-    zmq::socket_t socket_;
-
     vector<zmq::pollitem_t> pollitems_;
-    map<string,zmq::socket_t*> address_to_socket_map_;
 
     logger log_;
     int gpu_count_;
@@ -653,7 +486,6 @@ private:
 
     std::shared_ptr<Evictor> evictor_;
     manager::ModelRepo& model_repo_ = manager::ModelRepo::getInstance();
-    PeerTCPImpl& h2h_tcp_ = PeerTCPImpl::getInstance();
 };
 
 }
