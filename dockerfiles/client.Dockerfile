@@ -1,6 +1,6 @@
 FROM standalone-base:latest
 
-RUN pip3 install torch==1.11.0a0+bfe5ad2
+# RUN pip3 install torch==1.11.0a0+bfe5ad2
 RUN pip3 install transformers==4.27.1
 RUN pip3 install pytorch-pretrained-bert==0.6.2
 
