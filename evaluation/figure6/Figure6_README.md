@@ -1,5 +1,7 @@
 **Full logs or/and screenshots can be found at [here](https://drive.google.com/drive/folders/18p5XVL8MehL1gHgo0w3tlIytpPZR3-ZO?usp=sharing)**
 
+**You need to copy the test scripts to run under `torpor/tests`**
+
 # Torpor
 
 ## 前置准备

@@ -1,5 +1,7 @@
 **Full logs or/and screenshots can be found at [here](https://drive.google.com/drive/folders/1O26NhI_OG-IeMwIQNwIc8YpnTVZZgwwm?usp=sharing) **
 
+**You need to first copy the test scripts and sender scripts to run under `torpor/scripts`**
+
 # Native
 
 ## experimental procedure

@@ -1,5 +1,9 @@
 **Full logs or/and screenshots can be found at [here](https://drive.google.com/drive/folders/1sr6MMDys4Ta7NfvqWc4ro2xW9fr7pZf4?usp=drive_link) **
 
+**You need to copy the test scripts to run under `torpor/tests`**
+
+
+
 # Experimental Procedure
 
 **The order of testing is +group, +Pipeline, +Pinned, from right to left.**

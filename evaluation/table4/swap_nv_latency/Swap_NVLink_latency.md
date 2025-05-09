@@ -1,5 +1,7 @@
 # 前置操作
 
+**You need to copy the test scripts to run under `torpor/tests`**
+
 1. 先确定测试主机的 NVLink 可用，运行该命令：`nvidia-smi topo -m`
 
 2. 进入 standalone-server 交互模式

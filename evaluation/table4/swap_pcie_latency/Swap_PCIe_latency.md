@@ -1,5 +1,7 @@
 # 前置操作
 
+**You need to copy the test scripts to run under `torpor/tests`**
+
 1. 启动 standalone-server
 
    ```shell
