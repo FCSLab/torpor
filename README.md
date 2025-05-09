@@ -83,7 +83,7 @@ This section covers major experiments for single-node evaluation of our paper. W
 - GPU efficiency for low-frequency functions (Figure 8)  [link](evaluation/figure8)
 - Cross-GPU load balancing for high-frequency functions (Figure 9)  [link](evaluation/figure9)
 - Performance comparison (Figure 10)  [link](evaluation/figure10)
-- Torpor and various policies (Figure 11)  [link](evaluation/figure11)
+- Logs and parsers for other experiments (Figure 11)  [link](evaluation/figure11)
 
-We also upload logs and screenshots of these experiments to Google Drive, which can be found at [here](https://drive.google.com/drive/folders/1zhJh3OAfCHPx2yLyiPYTU6ttHgfcNhO_?usp=drive_link).
+We upload logs and screenshots of relevant experiments to Google Drive, which can be found at [here](https://drive.google.com/drive/folders/1zhJh3OAfCHPx2yLyiPYTU6ttHgfcNhO_?usp=drive_link).
 
