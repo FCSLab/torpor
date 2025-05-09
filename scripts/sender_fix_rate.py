@@ -10,11 +10,9 @@ sender_socket.connect('ipc:///dev/shm/ipc/externel_service')
 data_path = '../tools'
 
 class Sender:
-    def __init__(self, func_num, mins):
+    def __init__(self, func_num, rate, mins):
         self.func_num = func_num
-        if os.path.isfile(f'{data_path}/req_arrivals_{func_num}_{mins}.npy'):
-            self.req_arrivals = np.load(f'{data_path}/req_arrivals_{func_num}_{mins}.npy')
-        else:
+        if rate <= 0:
             self.pattern = []
             with open(f'{data_path}/invoc_pattern.txt', "r") as f:
                 for line in f:
@@ -26,7 +24,12 @@ class Sender:
 
             # test fixed rate
             self.func_rate = [np.average(self.pattern)] * func_num
+        else:
+            self.func_rate = [rate] * func_num
 
+        if os.path.isfile(f'{data_path}/req_arrivals_{func_num}_{rate}_{mins}.npy'):
+            self.req_arrivals = np.load(f'{data_path}/req_arrivals_{func_num}_{mins}.npy')
+        else:
             self.req_arrivals = []
             self.gen_req_arrivals(self.req_arrivals, mins = mins)
 
@@ -79,15 +82,19 @@ if __name__ == '__main__':
     func_num = 1
     if (len(sys.argv) > 1):
         func_num = int(sys.argv[1])
-    
-    mins = 5
+
+    rate = 0
     if (len(sys.argv) > 2):
-        mins = int(sys.argv[2])
+        rate = int(sys.argv[2])
+
+    mins = 5
+    if (len(sys.argv) > 3):
+        mins = int(sys.argv[3])
 
     flag = 0
-    if (len(sys.argv) > 3):
-        flag = int(sys.argv[3])
-    sender = Sender(func_num, mins)
+    if (len(sys.argv) > 4):
+        flag = int(sys.argv[4])
+    sender = Sender(func_num, rate, mins)
     sender.run(flag)
 
 

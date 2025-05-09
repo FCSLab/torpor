@@ -36,6 +36,7 @@ def get_manager_ipc(manager_id):
     return 'ipc:///dev/shm/ipc/manager_' + str(manager_id)
 
 model_mixed = ['resnet50', 'resnet101', 'resnet152', 'densenet169', 'densenet201', 'inception', 'efficientnet', 'bertqa']
+model_mixed = ['densenet201'] * 4 + ['bertqa'] # test heavy light 
 def get_mixed_model_name(client_id):
     model_idx = client_id % len(model_mixed)
     return model_mixed[model_idx]

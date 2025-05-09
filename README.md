@@ -1,107 +1,91 @@
-## Standalone system
+# Torpor Artifact
 
-### 1. Docker images
+### Introduction
 
-#### pull server and client images
+Torpor is a serverless inference system that support GPU-efficient model serving through *late-binding and model swapping*. It keeps models in main memory and swaps them onto a shared pool of local GPUs when requests arrive. Torpor has been successfully integrated into Alibaba's serverless platform (refer to our paper for more details).
 
-```
-docker login --username=fc_cn@test.aliyunid.com registry.cn-shanghai.aliyuncs.com
-password: Serverless123@aliyun
+This repository contains the codebase for Torpor's single-node prototype. The distributed version of Torpor is tightly coupled with Alibaba's proprietary serverless platform and is not available for open-source release. The `evaluation` folder includes scripts for single-node evaluation, covering major experiments in Sections 7.1 to 7.3 of our paper.
 
-docker pull registry.cn-shanghai.aliyuncs.com/fc-demo2/gpu-swap-standalone-base:client-2
-docker pull registry.cn-shanghai.aliyuncs.com/fc-demo2/gpu-swap-standalone-base:server-2
+### Get Started Instructions
 
-docker tag registry.cn-shanghai.aliyuncs.com/fc-demo2/gpu-swap-standalone-base:client-2 standalone-client
-docker tag registry.cn-shanghai.aliyuncs.com/fc-demo2/gpu-swap-standalone-base:server-2 standalone-server
+#### 0. Test environment
 
-```
+Setup a GPU worker node (e.g., Alibaba Cloud  `ecs.gn6e-c12g1.12xlarge` )
 
-#### or build from scratch
+- 48 vCPU cores
+- 384 GB memory
+- 4 * NVIDIA V100 GPUs each with 32 GB memory
+- Ubuntu 18/20
 
-- Build base image
-
-```
-cd standalone
-docker build . -t standalone-base -f dockerfiles/base.Dockerfile
+Configurations
 
 ```
-- Build CUDA server and client
-
-```
-docker build . -t standalone-server -f dockerfiles/server.Dockerfile
-docker build . -t standalone-client -f dockerfiles/client.Dockerfile
-
-```
-
-### 2. Run system on Ubuntu VM
-
-#### init and config
-
-- nvidia docker
-
-```
+### docker and nvidia docker
 sudo apt-get update
 sudo apt-get install -y docker.io
 systemctl start docker
 systemctl enable docker
-
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker
 
-```
-
-- python
-
-```
+### python
 apt-get update
 apt-get install -y protobuf-compiler python3.7
-
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
-
-# update pip
 pip3 install --upgrade pip
-
-# install packages
 pip3 install zmq numpy protobuf==3.20.1
 
-```
-
-- config system
-
-```
-# cp this project to local, and cd the standalone dir
-
-cd scripts/
+### Torpor conf
+# FIRST cp this project to local, replace {PROJ_DIR} to the actual path
+cd {PROJ_DIR}/scripts/
 bash compile.sh
-
 echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
-
-```
-
-#### run tests
-
-- launch CUDA server
-
-```
-docker run --gpus all --rm --network=host --ipc=host -v /dev/shm/ipc:/cuda -e MEM_LIMIT_IN_GB=25 -e IO_THREAD_NUM=4 -it  standalone-server  bash start.sh
-
-```
-
-- run test router
-
-```
-# cd standalone
-cd tests/ 
+cd {PROJ_DIR}/tests/ 
 bash ../scripts/compile.sh
+```
 
-python3 router_seq.py
 
-# clear up test
-docker ps -aq --filter ancestor=standalone-client | xargs docker stop
 
+#### 1. Docker images
+
+##### Pull docker images
 
 ```
+docker pull xxx
+```
+
+##### OR build from scratch
+
+- Build base image
+
+```
+cd {PROJ_DIR}
+docker build . -t standalone-base -f dockerfiles/base.Dockerfile
+```
+
+- Build standalone-native, standalone-client and standalone-server
+
+```shell
+docker build . -t standalone-native -f dockerfiles/native.Dockerfile
+docker build . -t standalone-client -f dockerfiles/client.Dockerfile
+docker build . -t standalone-server -f dockerfiles/server.Dockerfile
+```
+
+#### 2. Experiments
+
+This section covers major experiments for single-node evaluation of our paper. We explain the details of each experiment in  `evaluation` 
+
+- Latencies with GPU remoting and model swapping (Table 4) [link](evaluation/table4)
+- GPU remoting breakdown (Figure 6) 
+- Model swapping breakdown (Figure 7)
+- GPU efficiency for low-frequency functions (Figure 8)
+- Cross-GPU load balancing for high-frequency functions (Figure 9)
+- Performance comparison (Figure 10)
+- Torpor and various policies (Figure 11)
+
+Logs of some experiments can be found via xxx
+
