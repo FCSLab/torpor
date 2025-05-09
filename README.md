@@ -44,8 +44,6 @@ pip3 install zmq numpy protobuf==3.20.1
 cd {PROJ_DIR}/scripts/
 bash compile.sh
 echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
-cd {PROJ_DIR}/tests/ 
-bash ../scripts/compile.sh
 ```
 
 
@@ -55,7 +53,7 @@ bash ../scripts/compile.sh
 ##### Pull docker images
 
 ```
-docker pull xxx
+To be updated
 ```
 
 ##### OR build from scratch
@@ -77,15 +75,15 @@ docker build . -t standalone-server -f dockerfiles/server.Dockerfile
 
 #### 2. Experiments
 
-This section covers major experiments for single-node evaluation of our paper. We explain the details of each experiment in  `evaluation` 
+This section covers major experiments for single-node evaluation of our paper. We summarize the steps to per each experiment in  `evaluation` .
 
 - Latencies with GPU remoting and model swapping (Table 4) [link](evaluation/table4)
-- GPU remoting breakdown (Figure 6) 
-- Model swapping breakdown (Figure 7)
-- GPU efficiency for low-frequency functions (Figure 8)
-- Cross-GPU load balancing for high-frequency functions (Figure 9)
-- Performance comparison (Figure 10)
-- Torpor and various policies (Figure 11)
+- GPU remoting breakdown (Figure 6)  [link](evaluation/figure6)
+- Model swapping breakdown (Figure 7)  [link](evaluation/figure7)
+- GPU efficiency for low-frequency functions (Figure 8)  [link](evaluation/figure8)
+- Cross-GPU load balancing for high-frequency functions (Figure 9)  [link](evaluation/figure9)
+- Performance comparison (Figure 10)  [link](evaluation/figure10)
+- Torpor and various policies (Figure 11)  [link](evaluation/figure11)
 
-Logs of some experiments can be found via xxx
+We also upload logs and screenshots of these experiments to Google Drive, which can be found at [here](https://drive.google.com/drive/folders/1zhJh3OAfCHPx2yLyiPYTU6ttHgfcNhO_?usp=drive_link).
 
