@@ -12,6 +12,3 @@ Directly execute each of scripts
 python3 densenet169_native_execution.py
 ...
 ```
-
-
-

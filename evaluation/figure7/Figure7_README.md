@@ -2,8 +2,6 @@
 
 **You need to copy the test scripts to run under `torpor/tests`**
 
-
-
 # Experimental Procedure
 
 **The order of testing is +group, +Pipeline, +Pinned, from right to left.**
@@ -61,7 +59,7 @@
      -it standalone-server bash
    ```
 
-2. modify memory_manager.hpp
+2. modify `memory_manager.hpp`
 
    ```shell
    cd /gpu-swap/include/server/

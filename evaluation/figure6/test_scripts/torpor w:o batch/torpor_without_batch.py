@@ -29,7 +29,7 @@ for i in range(num):
     print(f'ExecuteAfterLoad {i} signal ack {ack.ack}')
 
     p = subprocess.Popen(["bash", "/start_with_id.sh", str(i), "endpoint.py", str(9000 + i)])
-    time.sleep(60)  # bertqa 需要改大一点，原来是10
+    time.sleep(60)  # bertqa needs to be made bigger, it was 10.
     x = requests.get('http://localhost:' + str(9000 + i))
 
 

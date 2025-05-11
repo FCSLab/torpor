@@ -6,3 +6,4 @@ protoc -I=. --python_out=. signal.proto
 cd -
 
 mv ../proto/signal_pb2.py .
+cp signal_pb2.py ../tests/

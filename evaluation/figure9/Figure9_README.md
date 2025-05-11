@@ -6,25 +6,7 @@
 
 ## Native
 
-1. build native image
-
-   ```shell
-   cd standalone
-   docker build . -t standalone-base -f dockerfiles/base.Dockerfile
-   
-   docker build . -t standalone-native -f dockerfiles/native.Dockerfile
-   ```
-
-2. config system
-
-   ```shell
-   cd scripts/
-   bash compile.sh
-   
-   echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
-   ```
-
-3. run test script
+1. run test script
 
    ```shell
    # native (no standalone-server)
@@ -32,14 +14,14 @@
    # -s 4 is mean to use 4 GPUs
    ```
 
-4. wait a dozen seconds or so
+2. wait a dozen seconds or so
 
    ```shell
    # check GPU status
    nvidia-smi
    ```
 
-5. run sender script
+3. run sender script
 
    ```shell
    # To simulate real-world scenarios, we adopted a random approach when sending requests to all functions.
@@ -57,7 +39,7 @@
    # To ensure fairness in testing, the same four traces are also used in Torpor.
    ```
 
-6. clear up test
+4. clear up test
 
    ```shell
    # Run this command after each test
@@ -78,15 +60,6 @@
      -e MEM_LIMIT_IN_GB=25 \
      -e IO_THREAD_NUM=4 \
      -it standalone-server bash start.sh
-   ```
-
-2. config system
-
-   ```shell
-   cd scripts/
-   bash compile.sh
-   
-   echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
    ```
 
 3. run test script

@@ -46,14 +46,14 @@ bash compile.sh
 echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
 ```
 
-
-
 #### 1. Docker images
 
 ##### Pull docker images
 
 ```
-To be updated
+docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:native-v1
+docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:client-v1
+docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:server-v1
 ```
 
 ##### OR build from scratch

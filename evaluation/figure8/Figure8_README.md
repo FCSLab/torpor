@@ -6,41 +6,21 @@
 
 ## experimental procedure
 
-**Logs and screenshots can be found at [here](https://drive.google.com/drive/folders/1O26NhI_OG-IeMwIQNwIc8YpnTVZZgwwm?usp=sharing) **
-
-1. build native image
-
-   ```shell
-   cd standalone
-   docker build . -t standalone-base -f dockerfiles/base.Dockerfile
-   
-   docker build . -t standalone-native -f dockerfiles/native.Dockerfile
-   ```
-
-2. config system
-
-   ```shell
-   cd scripts/
-   bash compile.sh
-   
-   echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
-   ```
-
-3. run test script
+1. run test script
 
    ```shell
    # native(no standalone-server)
    python3 baseline_native.py -m resnet152 -s 1 -f 19
    ```
 
-4. wait a dozen seconds or so
+2. wait a dozen seconds or so
 
    ```shell
    # check GPU status
    nvidia-smi
    ```
 
-5. run sender script
+3. run sender script
 
    ```shell
    python3 sender_fix_rate.py 19 5 0 80
@@ -51,7 +31,7 @@
    python3 sender_fix_rate.py 19 5 0 10
    ```
 
-6. clear up test
+4. clear up test
 
    ```shell
    # Run this command after each test
@@ -82,15 +62,6 @@ python3 analyze_router_log.py router.log
      -e MEM_LIMIT_IN_GB=25 \
      -e IO_THREAD_NUM=4 \
      -it standalone-server bash start.sh
-   ```
-
-2. config system
-
-   ```shell
-   cd scripts/
-   bash compile.sh
-   
-   echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
    ```
 
 3. run test script
@@ -134,5 +105,5 @@ python3 analyze_router_log.py router.log
 After the experimental procedure, you will get a log file.
 
 ```shell
-python3 analyze_router_log.py router.log
+python3 Figure8_analyze_router_log.py router.log
 ```

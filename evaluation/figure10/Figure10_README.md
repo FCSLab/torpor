@@ -6,25 +6,7 @@
 
 ## Native
 
-1. build native image
-
-   ```shell
-   cd standalone
-   docker build . -t standalone-base -f dockerfiles/base.Dockerfile
-   
-   docker build . -t standalone-native -f dockerfiles/native.Dockerfile
-   ```
-
-2. config system
-
-   ```shell
-   cd scripts/
-   bash compile.sh
-   
-   echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
-   ```
-
-3. run test script
+1. run test script
 
    ```shell
    # native (no standalone-server)
@@ -32,14 +14,14 @@
    python3 baseline_native.py -m resnet152 -s 4 -f 40
    ```
 
-4. wait a dozen seconds or so
+2. wait a dozen seconds or so
 
    ```shell
    # check GPU status
    nvidia-smi
    ```
 
-5. run sender script
+3. run sender script (send requests from trace)
 
    ```shell
    python3 sender_from_trace.py 40 5 0 # Generated 2225 requests from trace 
@@ -57,7 +39,7 @@
    req_arrivals_40_10min_trace.npy
    ```
 
-6. clear up test
+4. clear up test
 
    ```shell
    # Run this command after each test
@@ -88,7 +70,7 @@
    python3 router.py -m resnet152 -s 4 -f 160 -p sa
    ```
 
-3. run sender script
+3. run sender script (send requests from trace)
 
    ```shell
    python3 sender_from_trace.py 40 5 0 # Generated 2225 requests from trace
@@ -113,18 +95,20 @@
 1. run test script
 
    ```shell
+   cd ../tools/
    python3 export_keepalive.py req_arrivals_40_5min_trace.npy
-   
    python3 export_keepalive.py req_arrivals_40_10min_trace.npy
-   
    python3 export_keepalive.py req_arrivals_160_10min_trace.npy
    
-   
+   cd ../scripts/
    python3 baseline_keepalive.py -m resnet152 -s 4 -f 40
    python3 baseline_keepalive.py -m resnet152 -s 4 -f 160
+   # If you want to test different runtimes, you need to modify this line at the end of the baseline_keepalive file
+   # keep_alive = np.load(f'../tools/req_arrivals_{func_num}_5min_keepalive.npy', allow_pickle=True).item()
+   # keep_alive = np.load(f'../tools/req_arrivals_{func_num}_10min_keepalive.npy', allow_pickle=True).item()
    ```
 
-2. run sender script
+2. run sender script (send requests from trace)
 
    ```shell
    python3 sender_from_trace.py 40 5 0 # Generated 2225 requests from trace

@@ -102,8 +102,9 @@ class Router():
         launch_batch = [ (i % server_num, i) for i in range(func_num)]            
 
         for server_id, model_id in launch_batch:
-            os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-client python endpoint.py {9000 + model_id} &')
-    
+            # os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-client python endpoint.py {9000 + model_id} &')
+            os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-native python endpoint.py {9000 + model_id} &')    
+        
         # poll the endpoint until it is ready
         for server_id, model_id in launch_batch:
             while True:

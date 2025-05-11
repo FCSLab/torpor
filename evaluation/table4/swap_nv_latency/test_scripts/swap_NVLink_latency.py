@@ -3,7 +3,7 @@ Assumption: there is nvlink between gpu_1 and gpu_2
 
 First load model from host to gpu_1, then start formal test: load from gpu1 to gpu2 in each request
 
-Note: before doing this experiment, change the code in controller.hpp (在 server 容器中 /gpu-swap/include/server/controller.hpp）
+Note: before doing this experiment, change the code in controller.hpp (standalone-server: /gpu-swap/include/server/controller.hpp）
 
     before change:
 
