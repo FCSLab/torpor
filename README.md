@@ -54,6 +54,10 @@ echo max > /sys/fs/cgroup/pids/user.slice/user-0.slice/pids.max
 docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:native-v1
 docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:client-v1
 docker pull registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:server-v1
+
+docker tag registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:native-v1 standalone-native
+docker tag registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:client-v1 standalone-client
+docker tag registry.cn-shenzhen.aliyuncs.com/fcslab/torpor:server-v1 standalone-server
 ```
 
 ##### OR build from scratch
