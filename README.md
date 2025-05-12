@@ -38,7 +38,7 @@ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
 pip3 install --upgrade pip
 pip3 install zmq numpy protobuf==3.20.1
-pip3 install requests
+pip3 install requests pandas
 
 ### Torpor conf
 # FIRST cp this project to local, replace {PROJ_DIR} to the actual path

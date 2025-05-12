@@ -103,7 +103,7 @@
    cd ../scripts/
    python3 baseline_keepalive.py -m resnet152 -s 4 -f 40
    python3 baseline_keepalive.py -m resnet152 -s 4 -f 160
-   # If you want to test different runtimes, you need to modify this line at the end of the baseline_keepalive file
+   # If you want to test different runtimes, you need to modify this line at the end of the baseline_keepalive.py
    # keep_alive = np.load(f'../tools/req_arrivals_{func_num}_5min_keepalive.npy', allow_pickle=True).item()
    # keep_alive = np.load(f'../tools/req_arrivals_{func_num}_10min_keepalive.npy', allow_pickle=True).item()
    ```
@@ -132,6 +132,7 @@
 After the experimental procedure, you will get a log file.
 
 ```shell
-python figure10_analyze_router_log.py <logfile name> --total_func 40
-python figure10_analyze_router_log.py <logfile name> --total_func 160
+python3 figure10_analyze_router_log.py router.log --total_func 40
+python3 figure10_analyze_router_log.py router.log --total_func 160
+# If the test is INFless-KA, change router.log to ka.log
 ```
