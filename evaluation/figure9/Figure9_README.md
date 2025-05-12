@@ -26,6 +26,7 @@
    ```shell
    # To simulate real-world scenarios, we adopted a random approach when sending requests to all functions.
    # The fourth parameter is the per-function request rate. However, if the value is less than 0, a random strategy will be applied.
+   # If you want to change the request rate, change "scaled = sampled * 10" in sender_fix_rate.py.
    python3 sender_fix_rate.py 40 5 0 -5 # router13 random*9  Generated 22020
    python3 sender_fix_rate.py 40 5 0 -7 # router15 random*8	Generated 19965
    python3 sender_fix_rate.py 40 5 0 -1 # router10 random*10 Generated 34770
@@ -71,10 +72,11 @@
    python3 router.py -m resnet152 -s 4 -f 40 -p sa
    ```
 
-4. run sender script
+3. run sender script
 
    ```shell
    # It is necessary to use the same traces as those used in the native environment.
+   # You will see the same number of requests as native.
    python3 sender_fix_rate.py 40 5 0 -5 # router13 random*9  Generated 22020 router13_torpor
    python3 sender_fix_rate.py 40 5 0 -7 # router15 random*8	Generated 19965 router15_torpor
    python3 sender_fix_rate.py 40 5 0 -1 # router10 random*10 Generated 34770 router10_torpor

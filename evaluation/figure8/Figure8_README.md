@@ -105,5 +105,5 @@ python3 analyze_router_log.py router.log
 After the experimental procedure, you will get a log file.
 
 ```shell
-python3 Figure8_analyze_router_log.py router.log
+python3 figure8_analyze_router_log.py router.log
 ```
