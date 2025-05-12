@@ -7,11 +7,15 @@
 2. launch standalone-server and enter interactive mode
 
    ```shell
-   docker run --gpus all --rm --network=host --ipc=host -v /dev/shm/ipc:/cuda -e MEM_LIMIT_IN_GB=25 -e IO_THREAD_NUM=4 -it  standalone-server  bash
+   docker run --gpus all --rm --network=host --ipc=host \
+     -v /dev/shm/ipc:/cuda \
+     -e MEM_LIMIT_IN_GB=25 \
+     -e IO_THREAD_NUM=4 \
+     -it  standalone-server  bash
    ```
-
-   - modify `controller.hpp`
-
+   
+   - modify `controller.hpp` and remake
+   
      ```shell
      cd /gpu-swap/include/server/
      

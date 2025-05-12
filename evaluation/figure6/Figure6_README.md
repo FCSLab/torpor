@@ -27,7 +27,6 @@
 4. After each test, clear up the test
 
    ```shell
-   # clear up test
    docker ps -aq --filter ancestor=standalone-client | xargs docker stop
    docker ps -aq --filter ancestor=standalone-server | xargs docker stop
    ```
@@ -90,6 +89,7 @@
    # on the test host
    docker cp torpor_without_batch.py client-0:/
    
+   # Go back to the container and run the test script (Opening multiple terminal tabs allows for easy testing)
    model_name=resnet152 python3 torpor_without_batch.py
    model_name=bertqa python3 torpor_without_batch.py
    ```

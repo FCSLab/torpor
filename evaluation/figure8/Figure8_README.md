@@ -9,7 +9,7 @@
 1. run test script
 
    ```shell
-   # native(no standalone-server)
+   # native (no standalone-server)
    python3 baseline_native.py -m resnet152 -s 1 -f 19
    ```
 

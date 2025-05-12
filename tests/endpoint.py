@@ -45,6 +45,7 @@ else:
 model.eval()
 model = model.cuda()
 # x = torch.ones((1, 3, 224, 224)).cuda()
+logging.info(f"Model loaded: {model_name}") # print model_name
 torch.cuda.synchronize()
 
 class MyRequest(BaseHTTPRequestHandler):

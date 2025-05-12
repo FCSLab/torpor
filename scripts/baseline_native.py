@@ -242,9 +242,9 @@ class Router():
                 self.schedule_queue.put((1, None))
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-m', type=str, default='resnet152')
-parser.add_argument('-s', type=int, default=1)
-parser.add_argument('-f', type=int, default=1)
+parser.add_argument('-m', type=str, default='resnet152')    # Model name
+parser.add_argument('-s', type=int, default=1)  # GPU number
+parser.add_argument('-f', type=int, default=1)  # Function number
 parser.add_argument('-t', type=int, default=98)
 parser.add_argument('-d', type=int, default=100)
 parser.add_argument('-b', type=int, default=1)

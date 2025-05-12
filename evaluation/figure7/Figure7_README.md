@@ -59,7 +59,7 @@
      -it standalone-server bash
    ```
 
-2. modify `memory_manager.hpp`
+2. modify `memory_manager.hpp ` and remake
 
    ```shell
    cd /gpu-swap/include/server/
