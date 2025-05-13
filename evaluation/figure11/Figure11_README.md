@@ -38,3 +38,12 @@ Each data point in Figure 11 needs quite a long time to collect (about one-hour 
    docker ps -aq --filter ancestor=standalone-client | xargs docker stop
    docker ps -aq --filter ancestor=standalone-server | xargs docker stop
    ```
+
+# Test Results
+
+After the experimental procedure, you will get a log file.
+
+```bash
+python3 figure11_analyze_router_log.py router.log
+```
+
