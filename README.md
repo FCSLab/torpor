@@ -80,7 +80,7 @@ docker build . -t standalone-server -f dockerfiles/server.Dockerfile
 
 #### 2. Experiments
 
-This section covers major experiments for single-node evaluation of our paper. We summarize the steps to per each experiment in  `evaluation` .
+This section covers major experiments for single-node evaluation of our paper. We summarize the steps to conduct each experiment in  `evaluation` .
 
 - Latencies with GPU remoting and model swapping (Table 4) [link](evaluation/table4)
 - GPU remoting breakdown (Figure 6)  [link](evaluation/figure6)
@@ -88,7 +88,7 @@ This section covers major experiments for single-node evaluation of our paper. W
 - GPU efficiency for low-frequency functions (Figure 8)  [link](evaluation/figure8)
 - Cross-GPU load balancing for high-frequency functions (Figure 9)  [link](evaluation/figure9)
 - Performance comparison (Figure 10)  [link](evaluation/figure10)
-- Logs and parsers for other experiments (Figure 11)  [link](evaluation/figure11)
+- Torpor with various policies (Figure 11)  [link](evaluation/figure11)
 
 We upload logs and screenshots of relevant experiments to Google Drive, which can be found at [here](https://drive.google.com/drive/folders/1zhJh3OAfCHPx2yLyiPYTU6ttHgfcNhO_?usp=drive_link).
 
