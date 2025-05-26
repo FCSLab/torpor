@@ -80,7 +80,7 @@ docker build . -t standalone-server -f dockerfiles/server.Dockerfile
 
 #### 2. Experiments
 
-This section covers major experiments for single-node evaluation of our paper. We summarize the steps to conduct each experiment in  `evaluation` .
+This section covers major experiments for single-node evaluation of our paper. We summarize the steps to conduct each experiment in  `evaluation` . Besides, we provide the automated test script in `evulation2` for the main experiments, especially Table 4 and Figure 10.
 
 - Latencies with GPU remoting and model swapping (Table 4) [link](evaluation/table4)
 - GPU remoting breakdown (Figure 6)  [link](evaluation/figure6)
