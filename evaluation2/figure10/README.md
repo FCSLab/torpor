@@ -7,14 +7,12 @@ chmod +x run_figure10_ka.sh
 # The parameter represents the number of functions.
 
 # Native
-./run_figure10_native.sh 40
+./run_figure10_native.sh 80
 
 # Torpor
-python3 run_figure10_torpor.py -f 40
-python3 run_figure10_torpor.py -f 160
+python3 run_figure10_torpor.py -f 80
 
 # INFless-KA
-./run_figure10_ka.sh 40
-./run_figure10_ka.sh 160
+./run_figure10_ka.sh 80
 ```
 

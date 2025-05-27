@@ -99,12 +99,24 @@ class Router():
 
         self.server_num = server_num
         self.func_num = func_num
-        launch_batch = [ (i % server_num, i) for i in range(func_num)]            
+        # launch_batch = [ (i % server_num, i) for i in range(func_num)]
 
-        for server_id, model_id in launch_batch:
-            # os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-client python endpoint.py {9000 + model_id} &')
-            os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-native python endpoint.py {9000 + model_id} &')    
+        MAX_CONTAINERS = 72
+        actual_func_num = min(func_num, MAX_CONTAINERS)
+        launch_batch = [ (i % server_num, i) for i in range(actual_func_num)]
+        self.func_num = actual_func_num
+
+        # for server_id, model_id in launch_batch:
+            # os.system(f'docker run --gpus \'"device={server_id}"\' --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm  --name client-{model_id}  --network=host --ipc=host standalone-native python endpoint.py {9000 + model_id} &')    
         
+        batch_size = 10
+        for i in range(0, len(launch_batch), batch_size):
+            batch = launch_batch[i:i+batch_size]
+            for server_id, model_id in batch:
+                os.system(f'docker run --gpus \"device={server_id}\" --cpus=1 -e OMP_NUM_THREADS=1 -e KMP_DUPLICATE_LIB_OK=TRUE -e model_name={model_name} --rm --name client-{model_id} --network=host --ipc=host standalone-native python endpoint.py {9000 + model_id} &')
+            logging.info(f'Launched batch {i // batch_size + 1}, waiting 5 seconds...')
+            time.sleep(5)
+
         # poll the endpoint until it is ready
         for server_id, model_id in launch_batch:
             while True:
