@@ -163,10 +163,15 @@ def analyze_router_log(f_value):
         print(result.stdout)
 
 if __name__ == "__main__":
+    # parser = argparse.ArgumentParser(description="Run standalone-server, router, sender_from_trace, and analyze")
+    # parser.add_argument("-f", type=int, required=True, help="Value for the -f parameter (number of functions)")
+    # parser.add_argument("-d", type=int, required=True, help="Second parameter to sender_from_trace.py (e.g. trace duration in minutes)")
+    # args = parser.parse_args()
+
     parser = argparse.ArgumentParser(description="Run standalone-server, router, sender_from_trace, and analyze")
     parser.add_argument("-f", type=int, required=True, help="Value for the -f parameter (number of functions)")
-    parser.add_argument("-d", type=int, required=True, help="Second parameter to sender_from_trace.py (e.g. trace duration in minutes)")
     args = parser.parse_args()
+    d_value = 5
 
     container_id = start_standalone_server()
     if container_id:
@@ -179,6 +184,7 @@ if __name__ == "__main__":
                 print("Client loading not completed successfully.")
                 router_proc.terminate()
             else:
-                if run_sender_from_trace(args.f, args.d):
+                if run_sender_from_trace(args.f, d_value):
+                # if run_sender_from_trace(args.f, args.d):
                     stop_containers()
                     analyze_router_log(args.f)

@@ -2,10 +2,16 @@
 
 # Input arguments
 FUNC_NUM=$1
-MINUTES=$2
+MINUTES=5
+# MINUTES=$2
 
-if [[ -z "$FUNC_NUM" || -z "$MINUTES" ]]; then
-    echo "Usage: $0 <FUNC_NUM> <MINUTES>"
+# if [[ -z "$FUNC_NUM" || -z "$MINUTES" ]]; then
+#     echo "Usage: $0 <FUNC_NUM> <MINUTES>"
+#     exit 1
+# fi
+
+if [[ -z "$FUNC_NUM" ]]; then
+    echo "Usage: $0 <FUNC_NUM>"
     exit 1
 fi
 

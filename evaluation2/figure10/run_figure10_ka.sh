@@ -2,10 +2,16 @@
 
 # Get input arguments
 FUNC_NUM=$1
-MINUTES=$2
+MINUTES=5
+# MINUTES=$2
 
-if [[ -z "$FUNC_NUM" || -z "$MINUTES" ]]; then
-    echo "Usage: $0 <FUNC_NUM> <MINUTES>"
+# if [[ -z "$FUNC_NUM" || -z "$MINUTES" ]]; then
+#     echo "Usage: $0 <FUNC_NUM> <MINUTES>"
+#     exit 1
+# fi
+
+if [[ -z "$FUNC_NUM" ]]; then
+    echo "Usage: $0 <FUNC_NUM>"
     exit 1
 fi
 
@@ -19,7 +25,7 @@ sleep 3
 # Start baseline_keepalive.py in background
 cd "$ORIG_DIR"
 echo "Current working directory: $(pwd)"
-ls -l baseline_keepalive.py
+# ls -l baseline_keepalive.py
 nohup python3 baseline_keepalive.py -m resnet152 -s 4 -f "$FUNC_NUM" > baseline.log 2>&1 &
 sleep 10
 
